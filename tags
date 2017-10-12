@@ -1,0 +1,58 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ApplicationSpec	test/ApplicationSpec.scala	/^class ApplicationSpec extends PlaySpec with OneAppPerTest {$/;"	c
+ApplicationTimer	app/services/ApplicationTimer.scala	/^class ApplicationTimer @Inject() (clock: Clock, appLifecycle: ApplicationLifecycle) {$/;"	c
+AsyncController	app/controllers/AsyncController.scala	/^class AsyncController @Inject() (actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends Controller {$/;"	c
+AtomicCounter	app/services/Counter.scala	/^class AtomicCounter extends Counter {$/;"	c
+CountController	app/controllers/CountController.scala	/^class CountController @Inject() (counter: Counter) extends Controller {$/;"	c
+Counter	app/services/Counter.scala	/^trait Counter {$/;"	t
+ExampleFilter	app/filters/ExampleFilter.scala	/^class ExampleFilter @Inject()($/;"	c
+Filters	app/Filters.scala	/^class Filters @Inject() ($/;"	c
+HomeController	app/controllers/HomeController.scala	/^class HomeController @Inject() extends Controller {$/;"	c
+IntegrationSpec	test/IntegrationSpec.scala	/^class IntegrationSpec extends PlaySpec with OneServerPerTest with OneBrowserPerTest with HtmlUnitFactory {$/;"	c
+Module	app/Module.scala	/^class Module extends AbstractModule {$/;"	c
+acquire_sbt_jar	bin/activator	/^acquire_sbt_jar () {$/;"	f
+addDebugger	bin/activator	/^addDebugger () {$/;"	f
+addJava	bin/activator	/^addJava () {$/;"	f
+addResidual	bin/activator	/^addResidual () {$/;"	f
+addSbt	bin/activator	/^addSbt () {$/;"	f
+atomicCounter	app/services/Counter.scala	/^  private val atomicCounter = new AtomicInteger()$/;"	l
+checkJava	bin/activator	/^checkJava() {$/;"	f
+controllers	app/controllers/AsyncController.scala	/^package controllers$/;"	p
+controllers	app/controllers/CountController.scala	/^package controllers$/;"	p
+controllers	app/controllers/HomeController.scala	/^package controllers$/;"	p
+count	app/controllers/CountController.scala	/^  def count = Action { Ok(counter.nextCount().toString) }$/;"	m
+cygwinpath	bin/activator	/^cygwinpath() {$/;"	f
+detect_terminal_for_ui	bin/activator	/^detect_terminal_for_ui() {$/;"	f
+dlog	bin/activator	/^dlog () {$/;"	f
+echoerr	bin/activator	/^echoerr () {$/;"	f
+execRunner	bin/activator	/^execRunner () {$/;"	f
+filters	app/filters/ExampleFilter.scala	/^package filters$/;"	p
+getFutureMessage	app/controllers/AsyncController.scala	/^  private def getFutureMessage(delayTime: FiniteDuration): Future[String] = {$/;"	m
+get_mem_opts	bin/activator	/^get_mem_opts () {$/;"	f
+home	test/ApplicationSpec.scala	/^      val home = route(app, FakeRequest(GET, "\/")).get$/;"	l
+index	app/controllers/HomeController.scala	/^  def index = Action {$/;"	m
+is_cygwin	bin/activator	/^is_cygwin() {$/;"	f
+is_function_defined	bin/activator	/^is_function_defined() {$/;"	f
+jar_file	bin/activator	/^jar_file () {$/;"	f
+loadConfigFile	bin/activator	/^loadConfigFile() {$/;"	f
+make_url	bin/activator	/^make_url() {$/;"	f
+message	app/controllers/AsyncController.scala	/^  def message = Action.async {$/;"	m
+nextCount	app/services/Counter.scala	/^  def nextCount(): Int$/;"	m
+process_args	bin/activator	/^process_args () {$/;"	f
+process_my_args	bin/activator	/^process_my_args () {$/;"	f
+promise	app/controllers/AsyncController.scala	/^    val promise: Promise[String] = Promise[String]()$/;"	l
+realpath	bin/activator	/^realpath () {$/;"	f
+require_arg	bin/activator	/^require_arg () {$/;"	f
+run	bin/activator	/^run() {$/;"	f
+runningTime	app/services/ApplicationTimer.scala	/^    val runningTime: Long = stop.getEpochSecond - start.getEpochSecond$/;"	l
+services	app/services/ApplicationTimer.scala	/^package services$/;"	p
+services	app/services/Counter.scala	/^package services$/;"	p
+start	app/services/ApplicationTimer.scala	/^  private val start: Instant = clock.instant$/;"	l
+stop	app/services/ApplicationTimer.scala	/^    val stop: Instant = clock.instant$/;"	l
+usage	bin/activator	/^usage() {$/;"	f
+vlog	bin/activator	/^vlog () {$/;"	f
