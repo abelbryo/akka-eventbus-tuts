@@ -61,10 +61,15 @@ object Main {
   def postEventHandler[A] = system.actorOf(Props[PostEventHandler[A]], "post-event-actor")
 
   bus.subscribe(getEventHandler, Topic.Get)
-  bus.publish(MessageEnvelope(Topic.Get, Message.Get))
-
   bus.subscribe(postEventHandler[String], Topic.Post)
-  bus.publish(MessageEnvelope(Topic.Post, Message.Post("Hello World")))
+
+  def publishGet = {
+    bus.publish(MessageEnvelope(Topic.Get, Message.Get))
+  }
+
+  def publishPost(msg: String)  = {
+    bus.publish(MessageEnvelope(Topic.Post, Message.Post(msg)))
+  }
 
 }
 
