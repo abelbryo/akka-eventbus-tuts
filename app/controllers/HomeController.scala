@@ -1,17 +1,12 @@
 package controllers
 
-import javax.inject.{Singleton, Inject}
+import javax.inject.{ Singleton, Inject }
 
 import akka.actor._
 import akka.stream.Materializer
 import play.api.libs.json._
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
-
-final case class Msg(message: String)
-object Msg {
-  implicit val msgJsonFormat = Json.format[Msg]
-}
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -23,15 +18,15 @@ class HomeController @Inject() (cc: ControllerComponents)(
   system: ActorSystem,
   mat:    Materializer) extends AbstractController(cc) {
 
-  /**
-   */
+    import HomeController.PostBody
+
   def index = Action {
     Main.publishGet
     Ok(views.html.index("Hello World"))
   }
 
   def post = Action(parse.json) { implicit req =>
-    req.body.validate[Msg] match {
+    req.body.validate[PostBody] match {
       case JsSuccess(m, _) =>
         Main.publishPost(req.body)
         Ok(m.message)
@@ -44,6 +39,15 @@ class HomeController @Inject() (cc: ControllerComponents)(
   }
 }
 
+/** Companion of [[HomeController]]. */
+object HomeController {
+  final case class PostBody(message: String)
+  object PostBody {
+    implicit val msgJsonFormat: OFormat[PostBody] = Json.format[PostBody]
+  }
+}
+
+/* Actor */
 object PostSubscriberActor {
   def props(out: ActorRef) = Props(new PostSubscriberActor(Main.bus, out))
 }
