@@ -55,7 +55,7 @@ object PostSubscriberActor {
 class PostSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Post)
   override def receive: PartialFunction[Any, Unit] = {
-    case a @ Message.Post(msg) => out ! msg
+    case Message.Post(msg) => out ! msg
   }
 }
 
