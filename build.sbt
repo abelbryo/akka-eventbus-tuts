@@ -3,7 +3,7 @@ name := """hello-stream"""
 version := "1.0-SNAPSHOT"
 
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.8"
 
 libraryDependencies ++= Seq(
   jdbc,

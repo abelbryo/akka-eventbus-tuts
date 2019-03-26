@@ -9,3 +9,6 @@ target
 /.ensime_cache
 /.ensime
 /.staging
+tags
+.bloop
+.metals

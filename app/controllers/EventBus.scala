@@ -48,8 +48,7 @@ class GetEventHandler extends Actor {
 class PostEventHandler[A] extends Actor {
   import Message._
   def receive = {
-    case a: Post[A] =>
-      println(s"post ----->${a.body}")
+    case a: Post[A] => println(s"post ----->${a.body}")
     case _          => println("Error -- Only handles Post events")
   }
 }
@@ -62,7 +61,6 @@ object Main {
   val getEventHandler = system.actorOf(Props[GetEventHandler], "get-event-actor")
   def postEventHandler[A] = system.actorOf(Props[PostEventHandler[A]], "post-event-actor")
 
-
   bus.subscribe(getEventHandler, Topic.Get)
   bus.subscribe(postEventHandler[String], Topic.Post)
 
@@ -70,7 +68,7 @@ object Main {
     bus.publish(MessageEnvelope(Topic.Get, Message.Get))
   }
 
-  def publishPost(msg: String)  = {
+  def publishPost(msg: String) = {
     bus.publish(MessageEnvelope(Topic.Post, Message.Post(msg)))
   }
 

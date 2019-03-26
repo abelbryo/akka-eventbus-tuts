@@ -5,11 +5,16 @@ import javax.inject._
 import scala.util.control.NonFatal
 
 import akka.actor._
-import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source}
-import akka.stream.{Materializer, OverflowStrategy}
+import akka.stream.scaladsl.{ BroadcastHub, Flow, Keep, MergeHub, Sink, Source }
+import akka.stream.{ Materializer, OverflowStrategy }
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.streams.ActorFlow
+
+final case class Msg(message: String)
+object Msg {
+  implicit val msgJsonFormat = Json.format[Msg]
+}
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -19,23 +24,13 @@ import play.api.libs.streams.ActorFlow
 class HomeController @Inject() (cc: ControllerComponents)(
   implicit
   system: ActorSystem,
-  mat: Materializer
-) extends AbstractController(cc) {
+  mat:    Materializer) extends AbstractController(cc) {
 
   /**
-   * Create an Action to render an HTML page with a welcome message.
-   * The configuration in the `routes` file means that this method
-   * will be called when the application receives a `GET` request with
-   * a path of `/`.
    */
   def index = Action {
     Main.publishGet
-    Ok(views.html.index("Your new application is ready."))
-  }
-
-  final case class Msg(message: String)
-  object Msg {
-    implicit val msgJsonFormat = Json.format[Msg]
+    Ok(views.html.index("Hello World"))
   }
 
   def post = Action(parse.json) { implicit req =>
@@ -47,28 +42,9 @@ class HomeController @Inject() (cc: ControllerComponents)(
     }
   }
 
-//  lazy val (sink, source) = {
-//    val source = MergeHub.source[String]
-//      .log("source")
-//      .recoverWithRetries(-1, { case NonFatal(ex) => Source.empty})
-//
-//    val sink = BroadcastHub.sink[String]
-//    source.toMat(sink)(Keep.both).run()
-//  }
-//
-//  lazy val flow: Flow[String, String, _] = Flow.fromSinkAndSource(sink, source)
-//
-//  def socketHub = WebSocket.accept[String, String] { implicit req =>
-//    flow.map { e =>
-//      Main.publishPost(e)
-//      s"Received '$e.'"
-//    }
-//  }
-
-  def socket = WebSocket.accept[String , String] { request =>
+  def socket = WebSocket.accept[String, String] { request =>
     ActorFlow.actorRef(out => PostSubscriberActor.props(out))
   }
-
 }
 
 object PostSubscriberActor {
