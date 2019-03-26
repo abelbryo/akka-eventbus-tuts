@@ -1,15 +1,12 @@
 package controllers
 
-import javax.inject._
-
-import scala.util.control.NonFatal
+import javax.inject.{Singleton, Inject}
 
 import akka.actor._
-import akka.stream.scaladsl.{ BroadcastHub, Flow, Keep, MergeHub, Sink, Source }
-import akka.stream.{ Materializer, OverflowStrategy }
-import play.api.mvc._
+import akka.stream.Materializer
 import play.api.libs.json._
 import play.api.libs.streams.ActorFlow
+import play.api.mvc._
 
 final case class Msg(message: String)
 object Msg {
