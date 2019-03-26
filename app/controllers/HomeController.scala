@@ -36,13 +36,13 @@ class HomeController @Inject() (cc: ControllerComponents)(
   def post = Action(parse.json) { implicit req =>
     req.body.validate[Msg] match {
       case JsSuccess(m, _) =>
-        Main.publishPost(m.message)
+        Main.publishPost(req.body)
         Ok(m.message)
       case JsError(err) => UnprocessableEntity(JsError.toJson(err))
     }
   }
 
-  def socket = WebSocket.accept[String, String] { request =>
+  def socket = WebSocket.accept[JsValue, JsValue] { request =>
     ActorFlow.actorRef(out => PostSubscriberActor.props(out))
   }
 }
@@ -54,7 +54,7 @@ object PostSubscriberActor {
 class PostSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Post)
   override def receive: PartialFunction[Any, Unit] = {
-    case a @ Message.Post(msg) => out ! s" * ${msg}"
+    case a @ Message.Post(msg) => out ! msg
   }
 }
 

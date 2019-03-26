@@ -1,5 +1,7 @@
 package controllers
 
+import play.api.libs.json.JsValue
+
 import akka.actor._
 import akka.event.EventBus
 import akka.event.LookupClassification
@@ -68,7 +70,7 @@ object Main {
     bus.publish(MessageEnvelope(Topic.Get, Message.Get))
   }
 
-  def publishPost(msg: String) = {
+  def publishPost(msg: JsValue) = {
     bus.publish(MessageEnvelope(Topic.Post, Message.Post(msg)))
   }
 
