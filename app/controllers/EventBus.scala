@@ -19,7 +19,7 @@ class LookupBusImpl[T, A] extends EventBus with LookupClassification {
   override protected def compareSubscribers(a: Subscriber, b: Subscriber): Int =
     a.compareTo(b)
 
-  override protected def mapSize: Int = 128
+  override protected def mapSize(): Int = 128
 }
 
 //////////////////
@@ -32,7 +32,6 @@ object Topic {
 }
 
 //////////////////
-//
 sealed trait Message
 object Message extends Message {
   final case object Get extends Message
@@ -60,8 +59,10 @@ object Main {
   val system = ActorSystem("test-actor-system")
   val bus = new LookupBusImpl[Topic, Message]
 
-  val getEventHandler = system.actorOf(Props[GetEventHandler], "get-event-actor")
-  def postEventHandler[A] = system.actorOf(Props[PostEventHandler[A]], "post-event-actor")
+  val getEventHandler =
+    system.actorOf(Props[GetEventHandler](), "get-event-actor")
+  def postEventHandler[A] =
+    system.actorOf(Props[PostEventHandler[A]](), "post-event-actor")
 
   bus.subscribe(getEventHandler, Topic.Get)
   bus.subscribe(postEventHandler[String], Topic.Post)
@@ -75,4 +76,3 @@ object Main {
   }
 
 }
-
