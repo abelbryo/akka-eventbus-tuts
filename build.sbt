@@ -2,32 +2,32 @@ name := """hello-stream"""
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.13.6"
-
-libraryDependencies ++= Seq(guice)
+val AkkaHttpV = "10.2.8"
+val PlayVersion = "2.8.13"
+val PlayTwirlVersion = "1.6.0-M1"
+val PlayJsonVersion = "2.10.0-RC5"
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala)
+  //.enablePlugins(PlayScala)
   .settings(
+    scalaVersion := "3.0.2",
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "play-guice" % PlayVersion,
+      "com.typesafe.play" %% "play-akka-http-server" % PlayVersion,
+      "com.typesafe.play" %% "play-server" % PlayVersion,
+      "com.typesafe.play" %% "play" % PlayVersion,
+      "com.typesafe.play" %% "play-logback" % PlayVersion,
+      "com.typesafe.play" %% "filters-helpers" % PlayVersion,
+      "com.typesafe.play" %% "play-test" % PlayVersion,
+      "com.typesafe.play" %% "twirl-api" % PlayTwirlVersion,
+      "com.typesafe.akka" %% "akka-http" % AkkaHttpV
+    )
+      .map(_.cross(CrossVersion.for3Use2_13)) ++ Seq(
+      "com.typesafe" % "config" % "1.4.2"
+    ),
     scalacOptions ++= Seq(
-      "-Wdead-code",
-      "-Wextra-implicit",
-      "-Wnumeric-widen",
-      "-Woctal-literal",
-      "-Wunused:explicits",
-      "-Wunused:implicits",
-      "-Wunused:imports",
-      "-Wunused:locals",
-      "-Wunused:patvars",
-      "-Wunused:privates",
-      "-Xcheckinit",
-      "-Xfatal-warnings",
-      "-Xlint:type-parameter-shadow",
-      "-Xlint:unused",
-      "-Xverify",
-      "-Xsource:3",
-      "-Ydelambdafy:inline",
-      "-Yrangepos",
+      "-Xignore-scala2-macros",
+      //"-Xfatal-warnings",
       "-deprecation",
       "-encoding",
       "utf-8",
@@ -37,6 +37,8 @@ lazy val root = (project in file("."))
       "-language:postfixOps",
       "-unchecked"
     ),
+    Runtime / unmanagedClasspath += baseDirectory.value / "conf", // .conf;.;lib/*
+    reStart / mainClass := Option("play.core.server.ProdServerStart"),
     Compile / console / scalacOptions --= Seq(
       "-Wunused:linted",
       "-Wunused:imports",
