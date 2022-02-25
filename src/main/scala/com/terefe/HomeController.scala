@@ -24,18 +24,17 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
     Ok("Hello World")
   }
 
-   //ActionBuilder[play.api.mvc.Request, play.api.libs.json.JsValue]
-   def post = Action[JsValue](parse.json) { req: Request[JsValue] =>
-     req.body
-       .validate[PostBody]
-       .fold(
-         err => UnprocessableEntity(JsError.toJson(err)),
-         data => {
-           Main.publishPost(req.body)
-           Ok(data.message)
-         }
-       )
-   }
+  def post = Action(parse.json) { (req: Request[JsValue]) =>
+    req.body
+      .validate[PostBody]
+      .fold(
+        err => UnprocessableEntity(JsError.toJson(err)),
+        data => {
+          Main.publishPost(req.body)
+          Ok(data.message)
+        }
+      )
+  }
 
   def socket = WebSocket.accept[JsValue, JsValue] { _ =>
     ActorFlow.actorRef(out => PostSubscriberActor.props(out))
@@ -46,7 +45,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
 object HomeController {
   final case class PostBody(message: String)
   object PostBody {
-    implicit val msgJsonFormat: OFormat[PostBody] = Json.format[PostBody]
+    given msgJsonFormat: OFormat[PostBody] = Json.format[PostBody]
   }
 }
 

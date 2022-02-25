@@ -23,8 +23,10 @@ lazy val root = (project in file("."))
       "com.typesafe.akka" %% "akka-http" % AkkaHttpV
     )
       .map(_.cross(CrossVersion.for3Use2_13)) ++ Seq(
-      "com.typesafe" % "config" % "1.4.2"
-    ),
+      "com.typesafe" % "config" % "1.4.2",
+      "com.typesafe.play" %% "play-json" % "2.10.0-RC5",
+      "org.scalameta" %% "munit" % "1.0.0-M1" % Test
+    ) map (_.exclude("com.typesafe.play", "play-json_2.13")),
     scalacOptions ++= Seq(
       "-Xignore-scala2-macros",
       //"-Xfatal-warnings",
