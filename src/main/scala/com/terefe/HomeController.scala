@@ -1,15 +1,15 @@
 package com.terefe
 
-import javax.inject.{Singleton, Inject}
-
 import akka.actor._
 import akka.stream.Materializer
 import play.api.libs.json._
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 
-/** This controller creates an `Action` to handle HTTP requests to the
-  * application's home page.
+import javax.inject.Inject
+import javax.inject.Singleton
+
+/** This controller creates an `Action` to handle HTTP requests to the application's home page.
   */
 @Singleton
 class HomeController @Inject() (cc: ControllerComponents)(implicit
@@ -54,8 +54,7 @@ object PostSubscriberActor {
   def props(out: ActorRef) = Props(new PostSubscriberActor(Main.bus, out))
 }
 
-class PostSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef)
-    extends Actor {
+class PostSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Post)
   override def receive: PartialFunction[Any, Unit] = { case Message.Post(msg) =>
     out ! msg
