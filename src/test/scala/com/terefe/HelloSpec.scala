@@ -13,8 +13,6 @@ class HelloSpec extends munit.FunSuite {
     val p = TestPerson("Jill", 10)
     val json = Json.toJson(p)
 
-    println(json)
-
     assertEquals(json.as[TestPerson], p)
   }
 }
