@@ -8,7 +8,6 @@ val PlayTwirlVersion = "1.6.0-M1"
 val PlayJsonVersion = "2.10.0-RC5"
 
 lazy val root = (project in file("."))
-  // .enablePlugins(PlayScala)
   .settings(
     scalaVersion := "3.0.2",
     libraryDependencies ++= Seq(
@@ -38,7 +37,10 @@ lazy val root = (project in file("."))
       "-language:postfixOps",
       "-unchecked"
     ),
-    // Runtime / unmanagedClasspath += baseDirectory.value / "conf", // .conf;.;lib/*
+    javaOptions ++= Seq(
+      "--add-opens",
+      "java.base/java.lang=ALL-UNNAMED"
+    ),
     reStart / mainClass := Option("play.core.server.ProdServerStart"),
     Compile / console / scalacOptions --= Seq(
       "-Wunused:linted",
