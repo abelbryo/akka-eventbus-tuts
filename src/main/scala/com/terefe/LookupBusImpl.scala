@@ -1,6 +1,6 @@
 package com.terefe
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Format, Json}
 
 import akka.actor._
 import akka.event.EventBus
@@ -35,10 +35,14 @@ object Topic {
 sealed trait Message
 object Message extends Message {
   case object Get extends Message
-  case class Post[A](body: A) extends Message
+  case class Post(body: JsValue) extends Message
+  given PostFormat: Format[Post] = Json.format[Post]
 }
 
-class GetEventHandler extends Actor {
+// REST actor subscribers
+class GetEventHandler(bus: LookupBusImpl[Topic, Message]) extends Actor {
+  override def preStart(): Unit = bus.subscribe(self, Topic.Get)
+
   import Message._
   def receive = {
     case Get => println("get <---------------")
@@ -46,7 +50,8 @@ class GetEventHandler extends Actor {
   }
 }
 
-class PostEventHandler[A] extends Actor {
+class PostEventHandler(bus: LookupBusImpl[Topic, Message]) extends Actor {
+  override def preStart(): Unit = bus.subscribe(self, Topic.Post)
   import Message._
   def receive = {
     case Post(body) => println(s"post ----->${body}")
@@ -54,24 +59,23 @@ class PostEventHandler[A] extends Actor {
   }
 }
 
-object Main {
+object LookupBusImpl {
 
   val system = ActorSystem("test-actor-system")
   val bus = new LookupBusImpl[Topic, Message]
 
-  val getEventHandler =
-    system.actorOf(Props[GetEventHandler](), "get-event-actor")
-  def postEventHandler[A] =
-    system.actorOf(Props[PostEventHandler[A]](), "post-event-actor")
+  // This is just so the actors can be created
+  // and the bus can be subscribed to
+  system.actorOf(Props(new GetEventHandler(bus)), "get-event-actor")
+  system.actorOf(Props(new PostEventHandler(bus)), "post-event-actor")
 
-  bus.subscribe(getEventHandler, Topic.Get)
-  bus.subscribe(postEventHandler[String], Topic.Post)
-
-  def publishGet = {
+  // Used in the controller
+  def publishGet: Unit = {
     bus.publish(MessageEnvelope(Topic.Get, Message.Get))
   }
 
-  def publishPost(msg: JsValue) = {
+  def publishPost(msg: JsValue): Unit = {
+    println(s"Main.publishPost: ${msg}")
     bus.publish(MessageEnvelope(Topic.Post, Message.Post(msg)))
   }
 

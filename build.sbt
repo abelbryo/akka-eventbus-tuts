@@ -28,8 +28,7 @@ lazy val root = (project in file("."))
       "org.scalameta" %% "munit" % "1.0.0-M1" % Test
     ) map (_.exclude("com.typesafe.play", "play-json_2.13")),
     scalacOptions ++= Seq(
-      "-Xignore-scala2-macros",
-      //"-Xfatal-warnings",
+      "-Xfatal-warnings",
       "-deprecation",
       "-encoding",
       "utf-8",

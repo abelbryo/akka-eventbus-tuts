@@ -19,25 +19,29 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
 
   import HomeController.PostBody
 
-  def index = Action {
-    Main.publishGet
-    Ok("Hello World")
+  def ping = Action {
+    LookupBusImpl.publishGet
+    Ok("pong")
   }
 
-  def post = Action(parse.json) { (req: Request[JsValue]) =>
+  def sendMessage = Action(parse.json) { (req: Request[JsValue]) =>
     req.body
       .validate[PostBody]
       .fold(
         err => UnprocessableEntity(JsError.toJson(err)),
         data => {
-          Main.publishPost(req.body)
+          LookupBusImpl.publishPost(req.body)
           Ok(data.message)
         }
       )
   }
 
   def socket = WebSocket.accept[JsValue, JsValue] { _ =>
-    ActorFlow.actorRef(out => PostSubscriberActor.props(out))
+    ActorFlow
+      .actorRef[JsValue, JsValue](out => WebSocketSubscriberActor.props(out))
+      .map { jsValue =>
+        Json.obj("body" -> jsValue, "confirmation" -> "Recieved your message")
+      }
   }
 }
 
@@ -50,13 +54,21 @@ object HomeController {
 }
 
 /* Actor */
-object PostSubscriberActor {
-  def props(out: ActorRef) = Props(new PostSubscriberActor(Main.bus, out))
+object WebSocketSubscriberActor {
+  def props(out: ActorRef) = Props(new WebSocketSubscriberActor(LookupBusImpl.bus, out))
 }
 
-class PostSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef) extends Actor {
+class WebSocketSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Post)
-  override def receive: PartialFunction[Any, Unit] = { case Message.Post(msg) =>
-    out ! msg
+  override def receive: PartialFunction[Any, Unit] = { msg =>
+    msg
+      .asInstanceOf[JsValue]
+      .validate[Message.Post]
+      .fold(
+        err => println(s"***Error: Can't validate ${msg} Message.Post"),
+        data =>
+          println("*** Recieved successful Message.Post: " + data)
+          out ! data.body
+      )
   }
 }
