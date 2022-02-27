@@ -22,40 +22,32 @@ class LookupBusImpl[T, A] extends EventBus with LookupClassification {
   override protected def mapSize(): Int = 128
 }
 
-//////////////////
-sealed trait Topic
-object Topic {
-  case object Post extends Topic
-  case object Get extends Topic
-  case object Delete extends Topic
-  case object Update extends Topic
-}
+enum Topic:
+  case Post, Get, Delete, Update
 
-//////////////////
-sealed trait Message
-object Message extends Message {
-  case object Get extends Message
-  case class Post(body: JsValue) extends Message
-  given PostFormat: Format[Post] = Json.format[Post]
-}
+enum Message:
+  case Get extends Message
+  case Post(body: JsValue) extends Message
+
+object Message:
+  given PostFormat: Format[Message.Post] = Json.format
+end Message
 
 // REST actor subscribers
 class GetEventHandler(bus: LookupBusImpl[Topic, Message]) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Get)
 
-  import Message._
   def receive = {
-    case Get => println("get <---------------")
-    case _   => println("Error -- Only handles Get events")
+    case Message.Get => println("get <---------------")
+    case _           => println("Error -- Only handles Get events")
   }
 }
 
 class PostEventHandler(bus: LookupBusImpl[Topic, Message]) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Post)
-  import Message._
   def receive = {
-    case Post(body) => println(s"post ----->${body}")
-    case _          => println("Error -- Only handles Post events")
+    case Message.Post(body) => println(s"post ----->${body}")
+    case _                  => println("Error -- Only handles Post events")
   }
 }
 

@@ -1,3 +1,5 @@
+import com.typesafe.sbt.packager.docker.DockerChmodType
+
 name := """hello-stream"""
 
 version := "1.0-SNAPSHOT"
@@ -7,7 +9,21 @@ val PlayVersion = "2.8.13"
 val PlayTwirlVersion = "1.6.0-M1"
 val PlayJsonVersion = "2.10.0-RC5"
 
+lazy val dockerSettings = Seq(
+  dockerExposedPorts ++= Seq(9000, 9001),
+  dockerExposedUdpPorts += 4444,
+  dockerBaseImage := "openjdk:17-alpine",
+  // dockerChmodType := DockerChmodType.UserGroupWriteExecute,
+  Universal / javaOptions ++= Seq(
+    "--add-opens",
+    "java.base/java.lang=ALL-UNNAMED",
+    "-Dplay.server.pidfile.path=/dev/null"
+  )
+)
+
 lazy val root = (project in file("."))
+  .enablePlugins(DockerPlugin, JavaAppPackaging, AshScriptPlugin)
+  .settings(dockerSettings)
   .settings(
     scalaVersion := "3.0.2",
     libraryDependencies ++= Seq(
@@ -27,27 +43,14 @@ lazy val root = (project in file("."))
       "org.scalameta" %% "munit" % "1.0.0-M1" % Test
     ) map (_.exclude("com.typesafe.play", "play-json_2.13")),
     scalacOptions ++= Seq(
-      "-Xfatal-warnings",
-      "-deprecation",
-      "-encoding",
-      "utf-8",
-      "-feature",
-      "-language:higherKinds",
-      "-language:implicitConversions",
-      "-language:postfixOps",
-      "-unchecked"
+      "-Xfatal-warnings"
     ),
     javaOptions ++= Seq(
       "--add-opens",
       "java.base/java.lang=ALL-UNNAMED"
     ),
-    reStart / mainClass := Option("play.core.server.ProdServerStart"),
-    Compile / console / scalacOptions --= Seq(
-      "-Wunused:linted",
-      "-Wunused:imports",
-      "-Xfatal-warnings",
-      "-Xlint:unused"
-    )
+    Compile / mainClass := Option("play.core.server.ProdServerStart"),
+    Compile / console / scalacOptions --= Seq("-Xfatal-warnings")
   )
 
 Global / onChangedBuildSource := ReloadOnSourceChanges

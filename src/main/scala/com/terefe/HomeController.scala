@@ -53,11 +53,6 @@ object HomeController {
   }
 }
 
-/* Actor */
-object WebSocketSubscriberActor {
-  def props(out: ActorRef) = Props(new WebSocketSubscriberActor(LookupBusImpl.bus, out))
-}
-
 class WebSocketSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef) extends Actor {
   override def preStart(): Unit = bus.subscribe(self, Topic.Post)
   override def receive: PartialFunction[Any, Unit] = { msg =>
@@ -71,4 +66,8 @@ class WebSocketSubscriberActor(bus: LookupBusImpl[Topic, Message], out: ActorRef
           out ! data.body
       )
   }
+}
+
+object WebSocketSubscriberActor {
+  def props(out: ActorRef) = Props(new WebSocketSubscriberActor(LookupBusImpl.bus, out))
 }
